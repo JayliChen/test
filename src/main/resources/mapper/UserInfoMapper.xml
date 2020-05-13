@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongxingwang.center.user.web.dao.UserMapper">
+
+    <!--分页查询-->
+    <select id="getPageList" parameterType="com.zhongxingwang.center.user.web.dto.UserPageInfoReqDto"
+            resultType="com.zhongxingwang.center.user.web.entity.UserEo">
+        select * from user_info
+        <where>
+            dr = 0
+            <if test = "name != null and name != ''">and name like concat('%',#{name},'%')</if>
+            <if test = "identityCard != null and identityCard != ''">and identity_card like concat('%',#{identityCard},'%')</if>
+            <if test = "sex != null and sex != ''">AND sex = ${sex}</if>
+            <if test = "minAge != null and minAge != ''">AND age &gt;= ${minAge}</if>
+            <if test = "maxAge != null and maxAge != ''">AND sex &lt;= ${maxAge}</if>
+        </where>
+    </select>
+
+    <!--列表查询-->
+    <select id="list" parameterType="com.zhongxingwang.center.user.web.dto.UserPageInfoReqDto"
+            resultType="com.zhongxingwang.center.user.web.entity.UserEo">
+        select * from user_info
+        <where>
+            dr = 0
+            <if test = "name != null and name != ''">and name like concat('%',#{name},'%')</if>
+            <if test = "identityCard != null and identityCard != ''">and identity_card like concat('%',#{identityCard},'%')</if>
+            <if test = "sex != null and sex != ''">AND sex = ${sex}</if>
+            <if test = "minAge != null and minAge != ''">AND age &gt;= ${minAge}</if>
+            <if test = "maxAge != null and maxAge != ''">AND sex &lt;= ${maxAge}</if>
+        </where>
+    </select>
+    <select id="getIdentityCard" resultType="java.lang.String">
+        select distinct identity_card
+        from user_info
+    </select>
+
+    <resultMap id="userAccountResultMap" type="com.zhongxingwang.center.user.web.entity.UserAccountEo">
+        <id property="id" column="accountId"/>
+        <result property="bankCardNumber" column="bankCardNumber"/>
+        <result property="balance" column="balance"/>
+    </resultMap>
+
+    <resultMap id="userDetailResultMap" type="com.zhongxingwang.center.user.web.dto.UserDetailRespDto">
+        <id property="id" column="id"/>
+        <result property="userName" column="userName"/>
+        <result property="passWord" column="passWord"/>
+        <result property="name" column="name"/>
+        <result property="age" column="age"/>
+        <result property="sex" column="sex"/>
+        <result property="phone" column="phone"/>
+        <result property="identityCard" column="identityCard"/>
+        <result property="remark" column="remark"/>
+        <result property="createPerson" column="createPerson"/>
+        <result property="createTime" column="createTime"/>
+        <result property="updatePerson" column="updatePerson"/>
+        <result property="updateTime" column="updateTime"/>
+        <result property="dr" column="dr"/>
+        <!-- 将article list属性映射到collection -->
+        <collection property="userAccountEoList" ofType="com.zhongxingwang.center.user.web.entity.UserAccountEo" resultMap="userAccountResultMap"/>
+    </resultMap>
+
+
+    <select id="selectById" resultMap="userDetailResultMap">
+      select ui.id,
+      ui.user_name userName,
+      ui.pass_word passWord,
+      ui.name,
+      ui.age,
+      ui.sex,
+      ui.phone,
+      ui.identity_card identityCard,
+      ui.remark,
+      ui.create_person createPerson,
+      ui.create_time createTime,
+      ui.update_person updatePerson,
+      ui.update_time updateTime,
+      ua.id accountId,
+      ua.bank_card_number bankCardNumber,
+      ua.balance
+      from user_info ui
+      left join user_account ua on  ui.id = ua.parent_id
+      where ui.id = #{id}
+    </select>
+
+    <!--    批量新增-->
+    <insert id = "insertBatch" keyProperty="id" useGeneratedKeys="true" >
+        insert into user_info(`name`,user_name,pass_word,age, sex, phone,identity_card,remark,create_person,create_time,update_person,update_time)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.name},#{item.userName},#{item.passWord} ,#{item.age}, #{item.sex}, #{item.phone}, #{item.identityCard}, #{item.remark}, #{item.createPerson}, #{item.createTime}, #{item.updatePerson}, #{item.updateTime})
+        </foreach>
+    </insert>
+
+
+    <insert id="insertOne" keyProperty="id" useGeneratedKeys="true">
+        insert into user_info(user_name, pass_word, name, age,sex ,phone,identity_card,remark,create_person, create_time, update_person, update_time, dr)
+        values (#{userName}, #{passWord}, #{name}, #{age},#{sex},#{phone},#{identityCard},#{remark},#{createPerson}, #{createTime}, #{updatePerson}, #{updateTime}, #{dr})
+    </insert>
+</mapper>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhongxingwang.center.user.web.dao.UserAccountMapper">
+
+    <resultMap type="com.zhongxingwang.center.user.web.entity.UserAccountEo" id="UserAccountMap">
+        <result property="id" column="id" />
+        <result property="parentId" column="parent_id" />
+        <result property="bankCardNumber" column="bank_card_number" />
+        <result property="balance" column="balance" />
+        <result property="createPerson" column="create_person" />
+        <result property="createTime" column="create_time" />
+        <result property="updatePerson" column="update_person" />
+        <result property="updateTime" column="update_time" />
+        <result property="dr" column="dr" />
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryByParentId" resultMap="UserAccountMap">
+        select
+          id, parent_id, bank_card_number, balance, create_person, create_time, update_person, update_time, dr
+        from user_account
+        where parent_id = #{id}
+        limit 1
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="UserAccountMap">
+        select
+          id, parent_id, bank_card_number, balance, create_person, create_time, update_person, update_time, dr
+        from user_account
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="UserAccountMap">
+        select
+        id, parent_id, bank_card_number, balance, create_person, create_time, update_person, update_time, dr
+        from user_account
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="parentId != null">
+                and parent_id = #{parentId}
+            </if>
+            <if test="bankCardNumber != null and bankCardNumber != ''">
+                and bank_card_number = #{bankCardNumber}
+            </if>
+            <if test="balance != null">
+                and balance = #{balance}
+            </if>
+            <if test="createPerson != null and createPerson != ''">
+                and create_person = #{createPerson}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime}
+            </if>
+            <if test="updatePerson != null and updatePerson != ''">
+                and update_person = #{updatePerson}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime}
+            </if>
+            <if test="dr != null">
+                and dr = #{dr}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into user_account(parent_id, bank_card_number, balance, create_person, create_time, update_person, update_time, dr)
+        values (#{parentId}, #{bankCardNumber}, #{balance}, #{createPerson}, #{createTime}, #{updatePerson}, #{updateTime}, #{dr})
+    </insert>
+    <insert id="insertBatch">
+        insert into user_account(parent_id, bank_card_number, balance, create_person, create_time, update_person, update_time, dr)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.parentId}, #{item.bankCardNumber}, #{item.balance}, #{item.createPerson}, #{item.createTime}, #{item.updatePerson}, #{item.updateTime}, #{item.dr})
+        </foreach>
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update user_account
+        <set>
+            <if test="parentId != null">
+                parent_id = #{parentId},
+            </if>
+            <if test="bankCardNumber != null and bankCardNumber != ''">
+                bank_card_number = #{bankCardNumber},
+            </if>
+            <if test="balance != null">
+                balance = #{balance},
+            </if>
+            <if test="createPerson != null and createPerson != ''">
+                create_person = #{createPerson},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updatePerson != null and updatePerson != ''">
+                update_person = #{updatePerson},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="dr != null">
+                dr = #{dr},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from user_account where id = #{id}
+    </delete>
+
+</mapper>
